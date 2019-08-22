@@ -38,6 +38,10 @@ while ! sudo perf record -F $PERF_RECORD_FREQ -o $PERF_DATA_FILE -g -p $* -- sle
     if (( tries )); then
       tries=$((tries - 1))
       echo "Failed; retrying ($tries tries left)"
+      # Remove $PERF_DATA_FILE, because otherwise perf will rename it 
+      # (as root) to $PERF_DATA_FILE.old, which will create confusion and 
+      # confound anything trying to copy it (as non-root) later.
+      rm -f $PERF_DATA_FILE
     else
       echo "Failed"
       exit 1
